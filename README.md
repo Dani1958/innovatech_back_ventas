@@ -18,26 +18,6 @@ Forma parte del proyecto de **Evaluación Parcial N°2 — Introducción a Herra
 
 Este servicio vive en una EC2 **privada** y solo es alcanzable desde el Security Group del frontend. La persistencia se delega a un MySQL en **AWS RDS**.
 
----
-
-## Stack técnico
-
-| Capa | Tecnología |
-|---|---|
-| Lenguaje | Java 17 |
-| Framework | Spring Boot 3.4.4 |
-| Persistencia | Spring Data JPA + Hibernate |
-| Base de datos | MySQL 8 (AWS RDS); H2 en tests |
-| Documentación API | SpringDoc OpenAPI 2.7 (Swagger UI) |
-| Build | Maven 3.9 |
-| Contenedorización | Docker (multi-stage build) |
-| Imagen runtime | `eclipse-temurin:17-jre-alpine` |
-| CI/CD | GitHub Actions |
-| Registry | Docker Hub |
-| Cloud | AWS EC2 + RDS |
-
----
-
 ## Estructura del repositorio
 
 ```
@@ -105,38 +85,6 @@ docker run --rm -p 8080:8080 \
 ```
 
 Para el **stack completo** (frontend + ambos backends + MySQL en contenedor), usar el `docker-compose.yml` de la raíz `proyecto semestral/`.
-
----
-
-## Variables de entorno
-
-| Variable | Descripción | Ejemplo |
-|---|---|---|
-| `DB_ENDPOINT` | Host del MySQL (RDS endpoint o nombre de servicio en compose) | `xxx.rds.amazonaws.com` |
-| `DB_PORT` | Puerto MySQL | `3306` |
-| `DB_NAME` | Nombre de la base de datos | `ventas_db` |
-| `DB_USERNAME` | Usuario MySQL | `innovatech` |
-| `DB_PASSWORD` | Contraseña MySQL | `xxxxxx` |
-| `JAVA_OPTS` | Tuning de la JVM (opcional) | `-Xms256m -Xmx512m` |
-
-La JDBC URL del [`application.properties`](./Springboot-API-REST/src/main/resources/application.properties) incluye `createDatabaseIfNotExist=true`, por lo que Hibernate crea la base si no existe.
-
-## Persistencia de datos
-
-### En producción (EC2 + RDS)
-
-La base de datos vive en **AWS RDS** (MySQL 8). El contenedor del backend solo lee/escribe vía JDBC. RDS gestiona backups, snapshots y alta disponibilidad.
-
-### En desarrollo local (docker-compose)
-
-Cuando se levanta el stack completo, MySQL corre como contenedor con un **volumen Docker named** (`mysql_data`) montado en `/var/lib/mysql`:
-
-- Los datos sobreviven a `docker compose down` y reinicios del host.
-- El volumen es portable entre máquinas (no depende de paths absolutos del host).
-
-**Por qué named volume y no bind mount:** un *bind mount* obligaría a depender de una ruta específica del sistema operativo (distinta en Windows, Mac y Linux), mientras que un *named volume* lo gestiona Docker de manera uniforme. Para datos de base de datos es la opción recomendada.
-
----
 
 **Pasos:**
 
