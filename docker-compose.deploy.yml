@@ -1,0 +1,27 @@
+# ============================================================
+# Compose de PRODUCCIÓN - EC2 back-Ventas (privada)
+# ------------------------------------------------------------
+# La BD MySQL vive en RDS (no aquí). Las credenciales y
+# endpoint se inyectan vía variables de entorno.
+# ============================================================
+
+services:
+  back-ventas:
+    image: ${DOCKERHUB_USERNAME}/innovatech-back-ventas:${IMAGE_TAG:-latest}
+    container_name: innovatech-back-ventas
+    restart: unless-stopped
+    environment:
+      DB_ENDPOINT: ${DB_ENDPOINT}     # endpoint del RDS
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME_VENTAS}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+    ports:
+      - "8080:8080"
+    networks:
+      - back-net
+
+networks:
+  back-net:
+    driver: bridge
